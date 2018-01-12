@@ -38,13 +38,16 @@ import numpy as np
 import PIL.Image
 import tensorflow as tf
 
+import sys
+sys.path.append('/home/taylor/Documents/pythonworkspace/models/research/')
+
 from object_detection.utils import dataset_util
 from object_detection.utils import label_map_util
 
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw pet dataset.')
 flags.DEFINE_string('output_dir', '', 'Path to directory to output TFRecords.')
-flags.DEFINE_string('label_map_path', 'data/labels_items.txt','Path to label map proto')
+flags.DEFINE_string('label_map_path', '/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt','Path to label map proto')
 
 FLAGS = flags.FLAGS
 
@@ -85,6 +88,11 @@ def dict_to_tf_example(data,
   width = int(data['size']['width'])
   height = int(data['size']['height'])
 
+  xmins = []
+  ymins = []
+  xmaxs = []
+  ymaxs = []
+
   classes = []
   classes_text = []
   truncated = []
@@ -97,7 +105,17 @@ def dict_to_tf_example(data,
       continue
     difficult_obj.append(int(difficult))
 
-    class_name = data['filename']
+    xmin = int(obj['bndbox']['xmin'])
+    xmax = int(obj['bndbox']['xmax'])
+    ymin = int(obj['bndbox']['ymin'])
+    ymax = int(obj['bndbox']['ymax'])
+
+    xmins.append(xmin / width)
+    ymins.append(ymin / height)
+    xmaxs.append(xmax / width)
+    ymaxs.append(ymax / height)
+
+    class_name = obj['name']
     classes_text.append(class_name.encode('utf8'))
     classes.append(label_map_dict[class_name])
     truncated.append(int(obj['truncated']))
@@ -106,18 +124,20 @@ def dict_to_tf_example(data,
   feature_dict = {
       'image/height': dataset_util.int64_feature(height),
       'image/width': dataset_util.int64_feature(width),
-      'image/filename': dataset_util.bytes_feature(
-          data['filename'].encode('utf8')),
-      'image/source_id': dataset_util.bytes_feature(
-          data['filename'].encode('utf8')),
+      'image/filename': dataset_util.bytes_feature(data['filename'].encode('utf8')),
+      'image/source_id': dataset_util.bytes_feature(data['filename'].encode('utf8')),
       'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
       'image/encoded': dataset_util.bytes_feature(encoded_jpg),
       'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
+      'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
+      'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
+      'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
+      'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
       'image/object/class/text': dataset_util.bytes_list_feature(classes_text),
       'image/object/class/label': dataset_util.int64_list_feature(classes),
       'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
       'image/object/truncated': dataset_util.int64_list_feature(truncated),
-      'image/object/view': dataset_util.bytes_list_feature(poses),
+      'image/object/view': dataset_util.bytes_list_feature(poses)
   }
 
   example = tf.train.Example(features=tf.train.Features(feature=feature_dict))
@@ -170,8 +190,9 @@ def main(_):
   logging.info('Reading from Pet dataset.')
   image_dir = os.path.join(data_dir, 'images')
   annotations_dir = os.path.join(data_dir, 'annotations')
-  examples_path = os.path.join(annotations_dir, 'xmls')
+  examples_path = os.path.join(annotations_dir, 'trainval.txt')
   examples_list = dataset_util.read_examples_list(examples_path)
+  print(len(examples_list))
 
   # Test images are not included in the downloaded data set, so we shall perform
   # our own split.
