@@ -193,7 +193,7 @@ class TrainerTest(tf.test.TestCase):
                   task=0,
                   num_clones=1,
                   worker_replicas=1,
-                  clone_on_cpu=True,
+                  clone_on_cpu=False,
                   ps_tasks=0,
                   worker_job_name='worker',
                   is_chief=True,
