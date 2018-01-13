@@ -1,11 +1,25 @@
-# TensorFlow Models
+本地运行方法：
 
-This repository contains a number of different models implemented in [TensorFlow](https://www.tensorflow.org):
+前提环境：python3.5 Tensorflow1.4
 
-The [official models](official) are a collection of example models that use TensorFlow's high-level APIs. They are intended to be well-maintained, tested, and kept up to date with the latest stable TensorFlow API. They should also be reasonably optimized for fast performance while still being easy to read. We especially recommend newer TensorFlow users to start here.
+1.登录自己的github fork models项目，然后用pycharmcheckout到本地
+2.下载数据集quiz-w8-doc，并将inference.py、run.py、run.sh、ssd_mobilenet_v1_pets.config添加到models/research目录下
+3.参照https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md安装Object Detection API所需要的libs
+并在research目录下执行脚本：protoc object_detection/protos/*.proto --python_out=. 编译Protobuf，用脚本：python object_detection/builders/model_builder_test.py
+验证是否编译成功
+4.修改create_pet_tf_record.py，并在research目录下执行环境变量配置脚本：export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+5.到https://gitee.com/ai100/quiz-w8-data.git下载实验数据
+6.执行生成tfrecord脚本：python object_detection/dataset_tools/create_pet_tf_record.py
+--label_map_path=/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt --data_dir=/home/taylor/Documents/homework/week08/quiz-w8-data
+--output_dir=/home/taylor/Documents/homework/week08/quiz-w8-data/out
+7.修改ssd_mobilenet_v1_pets.config、run.sh中目录及其他配置
+8.执行 python run.py
 
-The [research models](research) are a large collection of models implemented in TensorFlow by researchers. It is up to the individual researchers to maintain the models and/or provide support on issues and pull requests.
 
-The [samples folder](samples) contains code snippets and smaller models that demonstrate features of TensorFlow, including code presented in various blog posts.
+tinymind运行方法：
 
-The [tutorials folder](tutorials) is a collection of models described in the [TensorFlow tutorials](https://www.tensorflow.org/tutorials/).
+1.新建数据集my-objectdetection，并将model.ckpt.data-00000-of-00001、model.ckpt.index、model.ckpt.meta、labels_items.txt、pet_val.record 、pet_train.record
+test.jpg、ssd_mobilenet_v1_pets.config上传
+2.修改run.sh、ssd_mobilenet_v1_pets.config中的目录配置:output_dir dataset_dir和label_map_path input_path fine_tune_checkpoint
+3.新建模型
+4.运行
