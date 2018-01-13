@@ -23,3 +23,5 @@ test.jpg、ssd_mobilenet_v1_pets.config上传
 2.修改run.sh、ssd_mobilenet_v1_pets.config中的目录配置:output_dir dataset_dir和label_map_path input_path fine_tune_checkpoint
 3.新建模型
 4.运行
+
+tinymind模型地址：https://www.tinymind.com/luoweile/myobjectdetection
