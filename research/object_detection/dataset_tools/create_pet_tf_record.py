@@ -44,9 +44,33 @@ from object_detection.utils import label_map_util
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw pet dataset.')
 flags.DEFINE_string('output_dir', '', 'Path to directory to output TFRecords.')
-flags.DEFINE_string('label_map_path', '/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt','Path to label map proto')
+flags.DEFINE_string('label_map_path', '/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/cars_meta.txt','Path to label map proto')
 
 FLAGS = flags.FLAGS
+
+def read_imagefile_label(imagefile_label):
+  """Reads .txt files and returns lists of imagefiles paths and labels
+  Args:
+    imagefile_label: .txt file with image file paths and labels in each line
+  Returns:
+    imagefile: list with image file paths
+    label: list with labels
+  """
+  f = open(imagefile_label)
+  imagefiles = []
+  labels = []
+  bboxs = []
+  for line in f:
+    line = line[:-1].split(' ')
+    im = line[0]
+    l = line[1]
+    bbox = line[2:]
+    for idx, value in enumerate(bbox):
+      bbox[idx] = int(bbox[idx])
+    imagefiles.append(im)
+    labels.append(int(l))
+    bboxs.append(bbox)
+  return imagefiles, labels, bboxs
 
 def dict_to_tf_example(data,
                        label_map_dict,
@@ -73,6 +97,8 @@ def dict_to_tf_example(data,
   Raises:
     ValueError: if the image pointed to by data['filename'] is not a valid JPEG
   """
+
+
   img_path = os.path.join(image_subdirectory, data['filename'])
   with tf.gfile.GFile(img_path, 'rb') as fid:
     encoded_jpg = fid.read()
@@ -155,6 +181,10 @@ def create_tf_record(output_filename,
     image_dir: Directory where image files are stored.
     examples: Examples to parse and save to tf record.
   """
+  imagefile_label_train = os.path.join(annotations_dir, 'cars_train_annos.txt')
+  imagefile_label_test = os.path.join(annotations_dir, 'cars_test_annos.txt')
+  images_train, labels_train, bboxs_train = read_imagefile_label(imagefile_label_train)
+  images_test, labels_test, bboxs_test = read_imagefile_label(imagefile_label_test)
   writer = tf.python_io.TFRecordWriter(output_filename)
   for idx, example in enumerate(examples):
     if idx % 100 == 0:
@@ -181,33 +211,36 @@ def create_tf_record(output_filename,
 
 # TODO(derekjchow): Add test for pet/PASCAL main files.
 def main(_):
-  data_dir = FLAGS.data_dir
+  data_dir = FLAGS.data_dir #/home/taylor/Documents/homework/vehicle-detect-dataset
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
 
   logging.info('Reading from Pet dataset.')
-  image_dir = os.path.join(data_dir, 'images')
-  annotations_dir = os.path.join(data_dir, 'annotations')
-  examples_path = os.path.join(annotations_dir, 'trainval.txt')
-  examples_list = dataset_util.read_examples_list(examples_path)
-  print(len(examples_list))
+  image_dir_train = os.path.join(data_dir, 'cars_train')
+  image_dir_test = os.path.join(data_dir, 'cars_test')
+  annotations_dir = os.path.join(data_dir, 'devkit')
+  examples_path_train = os.path.join(annotations_dir, 'cars_train_annos.txt')
+  examples_path_test = os.path.join(annotations_dir, 'cars_test_annos.txt')
+  examples_list_train = dataset_util.read_examples_list(examples_path_train)
+  examples_list_test = dataset_util.read_examples_list(examples_path_test)
+  print(len(examples_list_train))
+  print(len(examples_list_test))
 
   # Test images are not included in the downloaded data set, so we shall perform
   # our own split.
   random.seed(42)
-  random.shuffle(examples_list)
-  num_examples = len(examples_list)
-  num_train = int(0.7 * num_examples)
-  train_examples = examples_list[:num_train]
-  val_examples = examples_list[num_train:]
+  random.shuffle(examples_list_train)
+  random.shuffle(examples_list_test)
+  train_examples = examples_list_train
+  val_examples = examples_list_test
   logging.info('%d training and %d validation examples.',
                len(train_examples), len(val_examples))
 
   train_output_path = os.path.join(FLAGS.output_dir, 'pet_train.record')
   val_output_path = os.path.join(FLAGS.output_dir, 'pet_val.record')
   create_tf_record(train_output_path, label_map_dict, annotations_dir,
-                   image_dir, train_examples)
+                   image_dir_train, train_examples)
   create_tf_record(val_output_path, label_map_dict, annotations_dir,
-                   image_dir, val_examples)
+                   image_dir_test, val_examples)
 
 
 if __name__ == '__main__':
