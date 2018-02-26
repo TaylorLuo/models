@@ -462,6 +462,31 @@ def visualize_boxes_and_labels_on_image_array(image,
         else:
           box_to_color_map[box] = STANDARD_COLORS[
               classes[i] % len(STANDARD_COLORS)]
+    else:
+        if scores[i] == max(scores):
+           print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
+           box = tuple(boxes[i].tolist())
+           if instance_masks is not None:
+               box_to_instance_masks_map[box] = instance_masks[i]
+           if keypoints is not None:
+               box_to_keypoints_map[box].extend(keypoints[i])
+           if scores is None:
+               box_to_color_map[box] = 'black'
+           else:
+               if not agnostic_mode:
+                   class_name = 'NoCar'
+                   display_str = '{}: {}%'.format(
+                       class_name,
+                       int(100 * scores[i]))
+               else:
+                   display_str = 'score: {}%'.format(int(100 * scores[i]))
+               box_to_display_str_map[box].append(display_str)
+               if agnostic_mode:
+                   box_to_color_map[box] = 'DarkOrange'
+               else:
+                   box_to_color_map[box] = STANDARD_COLORS[
+                       classes[i] % len(STANDARD_COLORS)]
+
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():
