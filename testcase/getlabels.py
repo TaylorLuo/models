@@ -10,6 +10,9 @@ import numpy as np
 import PIL.Image
 import tensorflow as tf
 
+# from object_detection.utils import dataset_util
+# from object_detection.utils import label_map_util
+
 
 def read_examples_list(path):
   """Read list of training or validation examples.
@@ -36,8 +39,10 @@ data_dir = './'
 annotations_dir = os.path.join(data_dir, 'devkit')
 examples_path = os.path.join(annotations_dir, 'labels_items.txt')
 examples_list = read_examples_list('./labels_items.txt')
-f = open('./labels_items2.txt', 'w')
+f = open('./labels_items2.txt', 'w', encoding='utf8')
 for idx, item in enumerate(examples_list):
-    feature_dict = 'item {\n  id:' + str(idx) + '\n  '+ 'name:' +"'" +str(item) + "'" + '\n}\n'
-    f.writelines(feature_dict)
+    feature_dict = 'item {\n  id: ' + str(idx + 1) + '\n  '+ 'name: ' +"'" +str(item) + "'" + '\n}\n'
+    f.writelines(feature_dict + '\n')
 f.close()
+
+# label_map_dict = label_map_util.get_label_map_dict('./labels_items2.txt')
