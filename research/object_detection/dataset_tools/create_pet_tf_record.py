@@ -44,7 +44,7 @@ from object_detection.utils import label_map_util
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw pet dataset.')
 flags.DEFINE_string('output_dir', '', 'Path to directory to output TFRecords.')
-flags.DEFINE_string('label_map_path', '/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/cars_meta.txt','Path to label map proto')
+flags.DEFINE_string('label_map_path', '/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/labels_items2.txt.txt','Path to label map proto')
 
 FLAGS = flags.FLAGS
 
@@ -70,7 +70,7 @@ def read_imagefile_label(imagefile_label):
     imagefiles.append(im)
     labels.append(int(l))
     bboxs.append(bbox)
-  return imagefiles, labels, bboxs
+  return {'filename': imagefiles, 'class': labels, 'bboxs': bboxs}
 
 def dict_to_tf_example(data,
                        label_map_dict,
@@ -108,8 +108,8 @@ def dict_to_tf_example(data,
     raise ValueError('Image format not JPEG')
   key = hashlib.sha256(encoded_jpg).hexdigest()
 
-  width = int(data['size']['width'])
-  height = int(data['size']['height'])
+  width = int(image.shape[1])
+  height = int(image.shape[0])
 
   xmins = []
   ymins = []
@@ -122,27 +122,22 @@ def dict_to_tf_example(data,
   poses = []
   difficult_obj = []
 
-  for obj in data['object']:
-    difficult = bool(int(obj['difficult']))
-    if ignore_difficult_instances and difficult:
-      continue
-    difficult_obj.append(int(difficult))
+  bboxs = data['bboxs']
+  xmin = int(bboxs[0])
+  xmax = int(bboxs[1])
+  ymin = int(bboxs[2])
+  ymax = int(bboxs[3])
 
-    xmin = int(obj['bndbox']['xmin'])
-    xmax = int(obj['bndbox']['xmax'])
-    ymin = int(obj['bndbox']['ymin'])
-    ymax = int(obj['bndbox']['ymax'])
+  xmins.append(xmin / width)
+  ymins.append(ymin / height)
+  xmaxs.append(xmax / width)
+  ymaxs.append(ymax / height)
 
-    xmins.append(xmin / width)
-    ymins.append(ymin / height)
-    xmaxs.append(xmax / width)
-    ymaxs.append(ymax / height)
-
-    class_name = obj['name']
-    classes_text.append(class_name.encode('utf8'))
-    classes.append(label_map_dict[class_name])
-    truncated.append(int(obj['truncated']))
-    poses.append(obj['pose'].encode('utf8'))
+  class_name = data['class']
+  classes_text.append(class_name.encode('utf8'))
+  classes.append(label_map_dict[class_name])
+  truncated.append(0)
+  poses.append('Unspecified'.encode('utf8'))
 
   feature_dict = {
       'image/height': dataset_util.int64_feature(height),
@@ -169,9 +164,8 @@ def dict_to_tf_example(data,
 
 def create_tf_record(output_filename,
                      label_map_dict,
-                     annotations_dir,
                      image_dir,
-                     examples):
+                     data):
   """Creates a TFRecord file from examples.
 
   Args:
@@ -181,30 +175,14 @@ def create_tf_record(output_filename,
     image_dir: Directory where image files are stored.
     examples: Examples to parse and save to tf record.
   """
-  imagefile_label_train = os.path.join(annotations_dir, 'cars_train_annos.txt')
-  imagefile_label_test = os.path.join(annotations_dir, 'cars_test_annos.txt')
-  images_train, labels_train, bboxs_train = read_imagefile_label(imagefile_label_train)
-  images_test, labels_test, bboxs_test = read_imagefile_label(imagefile_label_test)
+
   writer = tf.python_io.TFRecordWriter(output_filename)
-  for idx, example in enumerate(examples):
-    if idx % 100 == 0:
-      logging.info('On image %d of %d', idx, len(examples))
-    xml_path = os.path.join(annotations_dir, 'xmls', example + '.xml')
-
-    if not os.path.exists(xml_path):
-      logging.warning('Could not find %s, ignoring example.', xml_path)
-      continue
-    with tf.gfile.GFile(xml_path, 'r') as fid:
-      xml_str = fid.read()
-    xml = etree.fromstring(xml_str)
-    data = dataset_util.recursive_parse_xml_to_dict(xml)['annotation']
-
-    try:
-      tf_example = dict_to_tf_example(
-          data, label_map_dict, image_dir)
-      writer.write(tf_example.SerializeToString())
-    except ValueError:
-      logging.warning('Invalid example: %s, ignoring.', xml_path)
+  try:
+    tf_example = dict_to_tf_example(
+        data, label_map_dict, image_dir)
+    writer.write(tf_example.SerializeToString())
+  except ValueError:
+    logging.warning('Invalid example: %s, ignoring.', "with Error when writing tfrecord")
 
   writer.close()
 
@@ -220,27 +198,31 @@ def main(_):
   annotations_dir = os.path.join(data_dir, 'devkit')
   examples_path_train = os.path.join(annotations_dir, 'cars_train_annos.txt')
   examples_path_test = os.path.join(annotations_dir, 'cars_test_annos.txt')
-  examples_list_train = dataset_util.read_examples_list(examples_path_train)
-  examples_list_test = dataset_util.read_examples_list(examples_path_test)
-  print(len(examples_list_train))
-  print(len(examples_list_test))
+  # examples_list_train = dataset_util.read_examples_list(examples_path_train)
+  # examples_list_test = dataset_util.read_examples_list(examples_path_test)
+  # print(len(examples_list_train))
+  # print(len(examples_list_test))
 
   # Test images are not included in the downloaded data set, so we shall perform
   # our own split.
-  random.seed(42)
-  random.shuffle(examples_list_train)
-  random.shuffle(examples_list_test)
-  train_examples = examples_list_train
-  val_examples = examples_list_test
-  logging.info('%d training and %d validation examples.',
-               len(train_examples), len(val_examples))
+  # random.seed(42)
+  # random.shuffle(examples_list_train)
+  # random.shuffle(examples_list_test)
+  # train_examples = examples_list_train
+  # val_examples = examples_list_test
+  # logging.info('%d training and %d validation examples.',
+  #              len(train_examples), len(val_examples))
 
   train_output_path = os.path.join(FLAGS.output_dir, 'pet_train.record')
   val_output_path = os.path.join(FLAGS.output_dir, 'pet_val.record')
-  create_tf_record(train_output_path, label_map_dict, annotations_dir,
-                   image_dir_train, train_examples)
-  create_tf_record(val_output_path, label_map_dict, annotations_dir,
-                   image_dir_test, val_examples)
+
+  data_train = read_imagefile_label(examples_path_train)
+  data_test = read_imagefile_label(examples_path_test)
+
+  create_tf_record(train_output_path, label_map_dict,
+                   image_dir_train, data_train)
+  create_tf_record(val_output_path, label_map_dict,
+                   image_dir_test, data_test)
 
 
 if __name__ == '__main__':
