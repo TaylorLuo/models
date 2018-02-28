@@ -61,7 +61,7 @@ def read_imagefile_label(imagefile_label):
   labels = []
   bboxs = []
   for line in f:
-    line = line.split('\t')
+    line = line[:-1].split('\t')
     im = line[-1]
     l = line[-2]
     bbox = line[0:4]
@@ -102,6 +102,7 @@ def dict_to_tf_example(data,
   img_path = os.path.join(image_subdirectory, data[0])
   print('00@@@@@@@@@@@@@@@')
   print(data[0])
+  print(img_path)
   with tf.gfile.GFile(img_path, 'rb') as fid:
     encoded_jpg = fid.read()
   encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -110,8 +111,10 @@ def dict_to_tf_example(data,
     raise ValueError('Image format not JPEG')
   key = hashlib.sha256(encoded_jpg).hexdigest()
 
-  width = int(image.shape[1])
-  height = int(image.shape[0])
+  imagearray = np.asarray(image)
+
+  width = int(imagearray.shape[1])
+  height = int(imagearray.shape[0])
 
   xmins = []
   ymins = []
@@ -140,8 +143,14 @@ def dict_to_tf_example(data,
   class_name = data[1]
   print('11@@@@@@@@@@@@@@@')
   print(data[1])
-  classes_text.append(class_name.encode('utf8'))
-  classes.append(label_map_dict[class_name])
+  classes_text.append(class_name)
+  print("new_dict@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  new_dict = {v: k for k, v in label_map_dict.items()}
+  for (d, x) in new_dict.items():
+    print("key:" + str(d) + ",value:" + x)
+  classes.append(new_dict[class_name])
+  print('11@@@@@@@@@@@@@@@')
+  print(new_dict[class_name])
   truncated.append(0)
   poses.append('Unspecified'.encode('utf8'))
 
@@ -157,7 +166,7 @@ def dict_to_tf_example(data,
       'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
       'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
       'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
-      'image/object/class/text': dataset_util.bytes_list_feature(classes_text),
+      'image/object/class/text': dataset_util.int64_list_feature(classes_text),
       'image/object/class/label': dataset_util.int64_list_feature(classes),
       'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
       'image/object/truncated': dataset_util.int64_list_feature(truncated),
@@ -191,10 +200,10 @@ def create_tf_record(output_filename,
   # print(examples)
   for idx, data in enumerate(dictdata):
       # print(data)
-      print('00@@@@@@@@@@@@@@@')
-      print(data[0])
-      print('@@@@@@@@@@@@@@@')
-      print(data[0].split('.')[0] + "'")
+      # print('00@@@@@@@@@@@@@@@')
+      # print(data[0])
+      # print('@@@@@@@@@@@@@@@')
+      # print(data[0].split('.')[0] + "'")
       # print('11@@@@@@@@@@@@@@@')
       # print(data[1])
       # print('22@@@@@@@@@@@@@@@')
@@ -202,9 +211,10 @@ def create_tf_record(output_filename,
       # print('@@@@@@@@@@@@@@@')
       # print(data[0].split('.')[0]+"'")
 
-      if (data[0].split('.')[0]+"'") in examples:
-          print('@@@@@@@@@@@@@@@')
-          print(data[0].split('.')[0]+"'")
+      # if (data[0].split('.')[0]+"'") in examples:
+      if '07653' in examples:
+          # print('@@@@@@@@@@@@@@@')
+          # print(data[0].split('.')[0])
           try:
             tf_example = dict_to_tf_example(
                 data, label_map_dict, image_dir)
@@ -219,6 +229,10 @@ def create_tf_record(output_filename,
 def main(_):
   data_dir = FLAGS.data_dir #/home/taylor/Documents/homework/vehicle-detect-dataset
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
+  print("FLAGS.label_map_path---@@@@@@@@@@@@@@@@@@")
+  print(FLAGS.label_map_path)
+  for (d, x) in label_map_dict.items():
+    print("key:" + d + ",value:" + str(x))
 
   logging.info('Reading from Pet dataset.')
   image_dir_train = os.path.join(data_dir, 'cars_train')
