@@ -116,9 +116,9 @@ def dict_to_tf_example(data,
   width = int(imagearray.shape[1])
   height = int(imagearray.shape[0])
 
-  print('@@@@@@@@@@@@@@@@@@')
-  print(width)
-  print(height)
+  # print('@@@@@@@@@@@@@@@@@@')
+  # print(width)
+  # print(height)
 
   xmins = []
   ymins = []
@@ -132,16 +132,16 @@ def dict_to_tf_example(data,
   difficult_obj = []
 
   bboxs = data[2]
-  print('22@@@@@@@@@@@@@@@')
-  print(data[2])
+  # print('22@@@@@@@@@@@@@@@')
+  # print(data[2])
   xmin = int(bboxs[0])
   xmax = int(bboxs[1])
   ymin = int(bboxs[2])
   ymax = int(bboxs[3])
-  print(xmin)
-  print(xmax)
-  print(ymin)
-  print(ymax)
+  # print(xmin)
+  # print(xmax)
+  # print(ymin)
+  # print(ymax)
 
   xmins.append(xmin / width)
   ymins.append(ymin / height)
@@ -151,6 +151,9 @@ def dict_to_tf_example(data,
   classid = data[1]
   new_dict = {v: k for k, v in label_map_dict.items()}
   class_name = new_dict[classid]
+  # print('@@@@@@@@@@@@@@@@@@')
+  # print(class_name)
+  # print(classid)
   classes_text.append(class_name.encode('utf8'))
   classes.append(classid)
   difficult_obj.append(0)
@@ -253,7 +256,7 @@ def main(_):
   random.seed(32)
   random.shuffle(examples_list)
   num_examples = len(examples_list)
-  num_train = int(0.9 * num_examples)
+  num_train = int(0.7 * num_examples)
   train_examples = examples_list[:num_train]
   val_examples = examples_list[num_train:]
   print('%d training and %d validation examples.',
@@ -264,8 +267,8 @@ def main(_):
   val_output_path = os.path.join(FLAGS.output_dir, 'pet_val.record')
 
 
-  # create_tf_record(train_output_path, label_map_dict,
-  #                  image_dir_train, data_train, train_examples)
+  create_tf_record(train_output_path, label_map_dict,
+                   image_dir_train, data_train, train_examples)
   create_tf_record(val_output_path, label_map_dict,
                    image_dir_train, data_train, val_examples)
 

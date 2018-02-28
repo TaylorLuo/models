@@ -14,6 +14,7 @@ week08:
 python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt --data_dir=/home/taylor/Documents/homework/week08/quiz-w8-data --output_dir=/home/taylor/Documents/homework/week08/quiz-w8-data/out
 wehicle-detect:
 python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/labels_items.txt --data_dir=/home/taylor/Documents/homework/vehicle-detect-dataset --output_dir=/home/taylor/Documents/homework/vehicle-detect-dataset/out
+python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt --data_dir=/home/taylor/Documents/homework/week08/quiz-w8-data --output_dir=/home/taylor/Documents/homework/week08/quiz-w8-data/out
 7.修改ssd_mobilenet_v1_pets.config、run.sh中目录及其他配置
 8.执行 python run.py
 
