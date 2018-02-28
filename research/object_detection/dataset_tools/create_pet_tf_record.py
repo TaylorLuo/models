@@ -156,9 +156,9 @@ def dict_to_tf_example(data,
   # print(classid)
   classes_text.append(class_name.encode('utf8'))
   classes.append(classid)
-  difficult_obj.append(0)
-  truncated.append(0)
-  poses.append('Unspecified'.encode('utf8'))
+  # difficult_obj.append(0)
+  # truncated.append(0)
+  # poses.append('Unspecified'.encode('utf8'))
 
   feature_dict = {
       'image/height': dataset_util.int64_feature(height),
