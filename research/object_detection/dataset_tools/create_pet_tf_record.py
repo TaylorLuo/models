@@ -100,9 +100,9 @@ def dict_to_tf_example(data,
 
 
   img_path = os.path.join(image_subdirectory, data[0])
-  print('00@@@@@@@@@@@@@@@')
-  print(data[0])
-  print(img_path)
+  # print('00@@@@@@@@@@@@@@@')
+  # print(data[0])
+  # print(img_path)
   with tf.gfile.GFile(img_path, 'rb') as fid:
     encoded_jpg = fid.read()
   encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -115,6 +115,10 @@ def dict_to_tf_example(data,
 
   width = int(imagearray.shape[1])
   height = int(imagearray.shape[0])
+
+  print('@@@@@@@@@@@@@@@@@@')
+  print(width)
+  print(height)
 
   xmins = []
   ymins = []
@@ -134,23 +138,22 @@ def dict_to_tf_example(data,
   xmax = int(bboxs[1])
   ymin = int(bboxs[2])
   ymax = int(bboxs[3])
+  print(xmin)
+  print(xmax)
+  print(ymin)
+  print(ymax)
 
   xmins.append(xmin / width)
   ymins.append(ymin / height)
   xmaxs.append(xmax / width)
   ymaxs.append(ymax / height)
 
-  class_name = data[1]
-  print('11@@@@@@@@@@@@@@@')
-  print(data[1])
-  classes_text.append(class_name)
-  print("new_dict@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  classid = data[1]
   new_dict = {v: k for k, v in label_map_dict.items()}
-  for (d, x) in new_dict.items():
-    print("key:" + str(d) + ",value:" + x)
-  classes.append(new_dict[class_name])
-  print('11@@@@@@@@@@@@@@@')
-  print(new_dict[class_name])
+  class_name = new_dict[classid]
+  classes_text.append(class_name.encode('utf8'))
+  classes.append(classid)
+  difficult_obj.append(0)
   truncated.append(0)
   poses.append('Unspecified'.encode('utf8'))
 
@@ -166,7 +169,7 @@ def dict_to_tf_example(data,
       'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
       'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
       'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
-      'image/object/class/text': dataset_util.int64_list_feature(classes_text),
+      'image/object/class/text': dataset_util.bytes_list_feature(classes_text),
       'image/object/class/label': dataset_util.int64_list_feature(classes),
       'image/object/difficult': dataset_util.int64_list_feature(difficult_obj),
       'image/object/truncated': dataset_util.int64_list_feature(truncated),
@@ -182,57 +185,53 @@ def create_tf_record(output_filename,
                      image_dir,
                      datas,
                      examples):
-  """Creates a TFRecord file from examples.
+    """Creates a TFRecord file from examples.
 
-  Args:
-    output_filename: Path to where output file is saved.
-    label_map_dict: The label map dictionary.
-    annotations_dir: Directory where annotation files are stored.
-    image_dir: Directory where image files are stored.
-    examples: Examples to parse and save to tf record.
-  """
+    Args:
+      output_filename: Path to where output file is saved.
+      label_map_dict: The label map dictionary.
+      annotations_dir: Directory where annotation files are stored.
+      image_dir: Directory where image files are stored.
+      examples: Examples to parse and save to tf record.
+    """
 
-  writer = tf.python_io.TFRecordWriter(output_filename)
-  filenames = datas['filename']
-  classnames = datas['class']
-  bboxs = datas['bboxs']
-  dictdata = zip(filenames, classnames, bboxs)
-  # print(examples)
-  for idx, data in enumerate(dictdata):
-      # print(data)
-      # print('00@@@@@@@@@@@@@@@')
-      # print(data[0])
-      # print('@@@@@@@@@@@@@@@')
-      # print(data[0].split('.')[0] + "'")
-      # print('11@@@@@@@@@@@@@@@')
-      # print(data[1])
-      # print('22@@@@@@@@@@@@@@@')
-      # print(data[2])
-      # print('@@@@@@@@@@@@@@@')
-      # print(data[0].split('.')[0]+"'")
-
-      # if (data[0].split('.')[0]+"'") in examples:
-      if '07653' in examples:
-          # print('@@@@@@@@@@@@@@@')
-          # print(data[0].split('.')[0])
-          try:
-            tf_example = dict_to_tf_example(
-                data, label_map_dict, image_dir)
-            writer.write(tf_example.SerializeToString())
-          except ValueError:
-            logging.warning('Invalid example: %s, ignoring.', "with Error when writing tfrecord")
-
-  writer.close()
+    writer = tf.python_io.TFRecordWriter(output_filename)
+    filenames = datas['filename']
+    classnames = datas['class']
+    bboxs = datas['bboxs']
+    dictdata = zip(filenames, classnames, bboxs)
+    print(len(examples))
+    # print(examples)
+    count = 0
+    count2 = 0
+    for idx, data in enumerate(dictdata):
+        # print("'" + data[0].split('.')[0]+"'")
+        count2 += 1
+        # if ("'" + data[0].split('.')[0]+"'") in examples:
+        if (int(data[0].split('.')[0])) in examples:
+            count += 1
+            # print('0000@@@@@@@@@@@@@@@')
+            # print(data[0].split('.')[0])
+            try:
+                tf_example = dict_to_tf_example(
+                    data, label_map_dict, image_dir)
+                writer.write(tf_example.SerializeToString())
+            except ValueError:
+                logging.warning('Invalid example: %s, ignoring.', "with Error when writing tfrecord")
+    print('0000@@@@@@@@@@@@@@@')
+    print(count)
+    print(count2)
+    writer.close()
 
 
 # TODO(derekjchow): Add test for pet/PASCAL main files.
 def main(_):
   data_dir = FLAGS.data_dir #/home/taylor/Documents/homework/vehicle-detect-dataset
   label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
-  print("FLAGS.label_map_path---@@@@@@@@@@@@@@@@@@")
-  print(FLAGS.label_map_path)
-  for (d, x) in label_map_dict.items():
-    print("key:" + d + ",value:" + str(x))
+  # print("FLAGS.label_map_path---@@@@@@@@@@@@@@@@@@")
+  # print(FLAGS.label_map_path)
+  # for (d, x) in label_map_dict.items():
+  #   print("key:" + d + ",value:" + str(x))
 
   logging.info('Reading from Pet dataset.')
   image_dir_train = os.path.join(data_dir, 'cars_train')
@@ -242,20 +241,19 @@ def main(_):
   examples_path_test = os.path.join(annotations_dir, 'cars_test_annos.txt')
   examples_path = os.path.join(annotations_dir, 'trainval.txt')
   examples_list = dataset_util.read_examples_list(examples_path)
+  examples_list = [int(i) for i in examples_list]
   # print(examples_list)
-  print(len(examples_list))
+  # print(len(examples_list))
 
   data_train = read_imagefile_label(examples_path_train)
 
 
   # Test images are not included in the downloaded data set, so we shall perform
   # our own split.
-  random.seed(42)
+  random.seed(32)
   random.shuffle(examples_list)
   num_examples = len(examples_list)
-  num_train = int(0.7 * num_examples)
-  print('num_train--@@@@@@@@@@@@@@@')
-  print(num_train)
+  num_train = int(0.9 * num_examples)
   train_examples = examples_list[:num_train]
   val_examples = examples_list[num_train:]
   print('%d training and %d validation examples.',
@@ -266,10 +264,10 @@ def main(_):
   val_output_path = os.path.join(FLAGS.output_dir, 'pet_val.record')
 
 
-  create_tf_record(train_output_path, label_map_dict,
-                   image_dir_train, data_train, train_examples)
-  # create_tf_record(val_output_path, label_map_dict,
-  #                  image_dir_test, data_train, val_examples)
+  # create_tf_record(train_output_path, label_map_dict,
+  #                  image_dir_train, data_train, train_examples)
+  create_tf_record(val_output_path, label_map_dict,
+                   image_dir_train, data_train, val_examples)
 
 
 if __name__ == '__main__':
