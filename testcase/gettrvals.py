@@ -1,48 +1,16 @@
-import hashlib
-import io
-import logging
-import os
-import random
-import re
 
-from lxml import etree
-import numpy as np
-import PIL.Image
-import tensorflow as tf
+def read_imagefile_label(imagefile_label):
 
-# from object_detection.utils import dataset_util
-# from object_detection.utils import label_map_util
+  f = open(imagefile_label)
+  f2 = open('./trainval.txt', 'w', encoding='utf8')
+  for line in f:
+    line = line.split('\t')
+    im = line[-1]
+    # f2.writeline(im.split('.')[0]+'\n')
+    # print(im.split('.')[0]+"'")
+    if('02977' in ['02977', '03328', '05223', '05499', '06888', '00470', '06369']):
+      print('yes, it is in')
 
 
-def read_examples_list(path):
-  """Read list of training or validation examples.
+read_imagefile_label('./cars_train_annos.txt')
 
-  The file is assumed to contain a single example per line where the first
-  token in the line is an identifier that allows us to find the image and
-  annotation xml for that example.
-
-  For example, the line:
-  xyz 3
-  would allow us to find files xyz.jpg and xyz.xml (the 3 would be ignored).
-
-  Args:
-    path: absolute path to examples list file.
-
-  Returns:
-    list of example identifiers (strings).
-  """
-  with tf.gfile.GFile(path) as fid:
-    lines = fid.readlines()
-  return [line.strip().split('	')[0] for line in lines]
-
-data_dir = './'
-annotations_dir = os.path.join(data_dir, 'devkit')
-examples_path = os.path.join(annotations_dir, 'labels_items.txt')
-examples_list = read_examples_list('./labels_items.txt')
-f = open('./labels_items2.txt', 'w', encoding='utf8')
-for idx, item in enumerate(examples_list):
-    feature_dict = 'item {\n  id: ' + str(idx + 1) + '\n  '+ 'name: ' +"'" +str(item) + "'" + '\n}\n'
-    f.writelines(feature_dict + '\n')
-f.close()
-
-# label_map_dict = label_map_util.get_label_map_dict('./labels_items2.txt')

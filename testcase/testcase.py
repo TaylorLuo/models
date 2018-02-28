@@ -1,42 +1,38 @@
-import hashlib
-import io
-import logging
-import os
-import random
-import re
+import chardet
 
-from lxml import etree
-import numpy as np
-import PIL.Image
-import tensorflow as tf
+#!/usr/bin/python
+# coding: utf-8
 
 
 def read_imagefile_label(imagefile_label):
-  """Reads .txt files and returns lists of imagefiles paths and labels
-  Args:
-    imagefile_label: .txt file with image file paths and labels in each line
-  Returns:
-    imagefile: list with image file paths
-    label: list with labels
-  """
-  f = open(imagefile_label, 'rb').read().decode()
-  # f_read = f.read()
-  # f_read_decode = f_read.decode('utf8')
-  # print(f_read_decode)
+  f = open(imagefile_label)
   imagefiles = []
   labels = []
   bboxs = []
   for line in f:
-    line = line[:-1].split(' ')
-    im = line[0]
-    l = line[1]
-    bbox = line[2:]
+    line = line.split('\t')
+    im = line[-1]
+    l = line[-2]
+    bbox = line[0:4]
     for idx, value in enumerate(bbox):
       bbox[idx] = int(bbox[idx])
     imagefiles.append(im)
     labels.append(int(l))
     bboxs.append(bbox)
-  return {'filename': imagefiles, 'class': labels, 'bboxs': bboxs}
+  dict = {'filename': imagefiles, 'class': labels, 'bboxs': bboxs}
+  return dict
 
 
 read_imagefile_label('./train_annos.txt')
+
+# line = "39	116	569	375	14	'00001.jpg'"
+# line = "30	52	246	147	'00001.jpg'"
+# line = line.split('\t')
+# im = line[-1]
+# l = line[-2]
+# bbox = line[0:4]
+# for idx, value in enumerate(bbox):
+#   bbox[idx] = int(bbox[idx])
+# print(im)
+# print(int(l))
+# print(bbox)
