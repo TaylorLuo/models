@@ -115,6 +115,9 @@ def dict_to_tf_example(data,
     class_name = obj['name']
     classes_text.append(class_name.encode('utf8'))
     classes.append(label_map_dict[class_name])
+    print("classname@@@@@@@@@@@@@@@@@@@@")
+    print(class_name)
+    print(label_map_dict[class_name])
     truncated.append(int(obj['truncated']))
     poses.append(obj['pose'].encode('utf8'))
 
