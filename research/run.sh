@@ -24,6 +24,7 @@ eval_dir=$output_dir/eval
 
 # config文件
 config=ssd_mobilenet_v1_pets.config
+#config=pipeline.config
 pipeline_config_path=$output_dir/$config
 
 # 先清空输出目录，本地运行会有效果，tinymind上运行这一行没有任何效果
