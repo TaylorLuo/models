@@ -165,6 +165,10 @@ class ObjectDetectionEvaluator(DetectionEvaluator):
 
     groundtruth_classes = groundtruth_dict[
         standard_fields.InputDataFields.groundtruth_classes]
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    print(standard_fields.InputDataFields.groundtruth_classes)
+    for (d, x) in groundtruth_dict.items():
+      print("key:" + d + ",value:" + str(x))
     groundtruth_classes -= self._label_id_offset
     # If the key is not present in the groundtruth_dict or the array is empty
     # (unless there are no annotations for the groundtruth on this image)
