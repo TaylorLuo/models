@@ -37,9 +37,9 @@ def read_examples_list(path):
 
 data_dir = './'
 annotations_dir = os.path.join(data_dir, 'devkit')
-examples_path = os.path.join(annotations_dir, 'labels_items.txt')
-examples_list = read_examples_list('./labels_items.txt')
-f = open('./labels_items2.txt', 'w', encoding='utf8')
+examples_path = os.path.join(annotations_dir, 'labels_items_pet.txt')
+examples_list = read_examples_list('./labels_items_pet.txt')
+f = open('./labels_items3.txt', 'w', encoding='utf8')
 for idx, item in enumerate(examples_list):
     feature_dict = 'item {\n  id: ' + str(idx + 1) + '\n  '+ 'name: ' +"'" +str(item) + "'" + '\n}\n'
     f.writelines(feature_dict + '\n')
