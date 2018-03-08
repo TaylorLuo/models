@@ -11,12 +11,12 @@ export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/slim:$DIR/object_detection
 # 定义各目录
 
 # locally run path
-#output_dir=/media/taylor/新加卷3/002---study/rnn_log/output  # 训练目录
-#dataset_dir=/home/taylor/Documents/homework/vehicle-detect-dataset # 数据集目录，这里是写死的，记得修改
+output_dir=/media/taylor/新加卷3/002---study/rnn_log/output  # 训练目录
+dataset_dir=/home/taylor/Documents/homework/vehicle-detect-dataset # 数据集目录，这里是写死的，记得修改
 
 # tinymind path
-output_dir=/output  # 训练目录
-dataset_dir=/data/luoweile/compcars-dataset # 数据集目录，这里是写死的，记得修改
+#output_dir=/output  # 训练目录
+#dataset_dir=/data/luoweile/my-objectdetection # 数据集目录，这里是写死的，记得修改
 
 train_dir=$output_dir/train
 checkpoint_dir=$train_dir
