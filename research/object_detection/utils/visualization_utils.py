@@ -390,7 +390,7 @@ def visualize_boxes_and_labels_on_image_array(image,
                                               instance_masks=None,
                                               keypoints=None,
                                               use_normalized_coordinates=False,
-                                              max_boxes_to_draw=20,
+                                              max_boxes_to_draw=1,
                                               min_score_thresh=.5,
                                               agnostic_mode=False,
                                               line_thickness=4):
@@ -448,6 +448,9 @@ def visualize_boxes_and_labels_on_image_array(image,
       else:
         if not agnostic_mode:
           if classes[i] in category_index.keys():
+            # print('22########################################')
+            # print(classes)
+            # print(category_index.keys())
             class_name = category_index[classes[i]]['name']
           else:
             class_name = 'N/A'
@@ -462,9 +465,13 @@ def visualize_boxes_and_labels_on_image_array(image,
         else:
           box_to_color_map[box] = STANDARD_COLORS[
               classes[i] % len(STANDARD_COLORS)]
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print('max(scores)= %.2f,class: %s, info: %s' % (max(scores), classes[i], class_name))
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     else:
         if scores[i] == max(scores):
-           print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
            box = tuple(boxes[i].tolist())
            if instance_masks is not None:
                box_to_instance_masks_map[box] = instance_masks[i]
@@ -486,7 +493,12 @@ def visualize_boxes_and_labels_on_image_array(image,
                else:
                    box_to_color_map[box] = STANDARD_COLORS[
                        classes[i] % len(STANDARD_COLORS)]
-
+           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
+           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           print('max(scores)= %.2f,but it is like class: %s, info: %s' % (max(scores), classes[i], category_index[classes[i]]['name']))
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():

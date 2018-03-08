@@ -163,10 +163,6 @@ class ObjectDetectionEvaluator(DetectionEvaluator):
     if image_id in self._image_ids:
       raise ValueError('Image with id {} already added.'.format(image_id))
 
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-    print(standard_fields.InputDataFields.groundtruth_classes)
-    for (d, x) in groundtruth_dict.items():
-      print("key:" + d + ",value:" + str(x))
     groundtruth_classes = groundtruth_dict[
         standard_fields.InputDataFields.groundtruth_classes]
     groundtruth_classes -= self._label_id_offset

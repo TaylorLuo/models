@@ -27,7 +27,7 @@ if __name__ == '__main__':
     FLAGS, unparsed = parse_args()
 
     PATH_TO_CKPT = os.path.join(FLAGS.output_dir, 'exported_graphs/frozen_inference_graph.pb')
-    PATH_TO_LABELS = os.path.join(FLAGS.dataset_dir, '/devkit/labels_items.txt')
+    PATH_TO_LABELS = os.path.join(FLAGS.dataset_dir, 'devkit/labels_items.txt')
 
     detection_graph = tf.Graph()
     with detection_graph.as_default():
@@ -40,9 +40,6 @@ if __name__ == '__main__':
     label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
     categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
     category_index = label_map_util.create_category_index(categories)
-
-    print("@@@@@@@@@@@@@@@@@@--category_index")
-    print(category_index)
 
     def load_image_into_numpy_array(image):
         (im_width, im_height) = image.size
@@ -64,14 +61,9 @@ if __name__ == '__main__':
             (boxes, scores, classes, num) = sess.run(
                 [detection_boxes, detection_scores, detection_classes, num_detections],
                 feed_dict={image_tensor: image_np_expanded})
-            print("@@@@@@@@@@@@@@@@@@--boxes")
-            print(boxes)
-            print("@@@@@@@@@@@@@@@@@@--scores")
-            print(scores)
-            print("@@@@@@@@@@@@@@@@@@--classes")
-            print(classes)
-            print("@@@@@@@@@@@@@@@@@@--num")
-            print(num)
+            # print('11############################')
+            # print(classes)
+            # print(scores)
             vis_util.visualize_boxes_and_labels_on_image_array(
                 image_np,
                 np.squeeze(boxes),
