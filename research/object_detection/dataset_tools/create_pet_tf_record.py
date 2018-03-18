@@ -100,9 +100,6 @@ def dict_to_tf_example(data,
 
 
   img_path = os.path.join(image_subdirectory, data[0])
-  print('00@@@@@@@@@@@@@@@')
-  print(data[0])
-  # print(img_path)
   with tf.gfile.GFile(img_path, 'rb') as fid:
     encoded_jpg = fid.read()
   encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -116,10 +113,6 @@ def dict_to_tf_example(data,
   width = int(imagearray.shape[1])
   height = int(imagearray.shape[0])
 
-  print('@@@@@@@@@@@@@@@@@@')
-  print(width)
-  print(height)
-
   xmins = []
   ymins = []
   xmaxs = []
@@ -132,16 +125,11 @@ def dict_to_tf_example(data,
   difficult_obj = []
 
   bboxs = data[2]
-  # print('22@@@@@@@@@@@@@@@')
-  # print(data[2])
+
   xmin = int(bboxs[0])
   xmax = int(bboxs[2])
   ymin = int(bboxs[1])
   ymax = int(bboxs[3])
-  # print(xmin)
-  # print(xmax)
-  # print(ymin)
-  # print(ymax)
 
   xmins.append(xmin / width)
   ymins.append(ymin / height)
@@ -151,10 +139,6 @@ def dict_to_tf_example(data,
   classid = data[1]
   new_dict = {v: k for k, v in label_map_dict.items()}
   class_name = new_dict[classid]
-  print('@@@@@@@@@@@@@@@@@@')
-  print(class_name)
-  print(classid)
-  print(data[0].encode('utf8'))
   classes_text.append(class_name.encode('utf8'))
   classes.append(classid)
   # difficult_obj.append(0)
@@ -204,9 +188,7 @@ def create_tf_record(output_filename,
     classnames = datas['class']
     bboxs = datas['bboxs']
     dictdata = zip(filenames, classnames, bboxs)
-    print(len(examples))
-    print(dictdata)
-    # print(examples)
+
     count = 0
     count2 = 0
     for idx, data in enumerate(dictdata):
@@ -256,7 +238,7 @@ def main(_):
   random.seed(32)
   random.shuffle(examples_list)
   num_examples = len(examples_list)
-  num_train = int(0.7 * num_examples)
+  num_train = int(0.8 * num_examples)
   train_examples = examples_list[:num_train]
   val_examples = examples_list[num_train:]
   print('%d training and %d validation examples.',

@@ -8,16 +8,17 @@ from flask import request, send_from_directory
 from flask import Flask, request, redirect, url_for
 import uuid
 import tensorflow as tf
-from classify_image import run_inference_on_image
+import classify_image as cls
 
 ALLOWED_EXTENSIONS = set(['jpg','JPG', 'jpeg', 'JPEG', 'png'])
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('model_dir', '', """Path to graph_def pb, """)
-tf.app.flags.DEFINE_string('model_name', 'my_inception_v4_freeze.pb', '')
-tf.app.flags.DEFINE_string('label_file', 'my_inception_v4_freeze.label', '')
-tf.app.flags.DEFINE_string('upload_folder', '/tmp/', '')
+tf.app.flags.DEFINE_string('model_dir', '/media/taylor/G/002---study/rnn_log/output', """Path to graph_def pb, """)
+tf.app.flags.DEFINE_string('dataset_dir', '/home/taylor/Documents/homework/vehicle-detect-dataset', """Path to graph_def pb, """)
+tf.app.flags.DEFINE_string('model_name', 'frozen_inference_graph.pb', '')
+tf.app.flags.DEFINE_string('label_file', 'labels_items.txt', '')
+tf.app.flags.DEFINE_string('upload_folder', '/home/taylor/Documents/homework/vehicle-detect-dataset', '')
 tf.app.flags.DEFINE_integer('num_top_predictions', 5,
                             """Display this many predictions.""")
 tf.app.flags.DEFINE_integer('port', '5001',
@@ -43,19 +44,25 @@ def rename_filename(old_file_name):
 
 def inference(file_name):
   try:
-    predictions, top_k, top_names = run_inference_on_image(file_name, model_file=FLAGS.model_name)
-    print(predictions)
-  except Exception as ex: 
+    score, top_names, image_outpath, lookslike = cls.run_inference_on_image(file_name, model_file=FLAGS.model_name)
+    print('@@@@@@@@@@@@@@@@@@@@@@')
+    print(score)
+    print(top_names)
+  except Exception as ex:
     print(ex)
     return ""
   new_url = '/static/%s' % os.path.basename(file_name)
-  image_tag = '<img src="%s"></img><p>'
+  print('##################')
+  print(file_name)
+  print(image_outpath)
+  image_tag = '<img src="%s"></img>'
   new_tag = image_tag % new_url
+  new_url2 = '/static/%s' % os.path.basename(image_outpath)
+  image_tag2 = '<img src="%s"></img><p>'
+  new_tag2 = image_tag2 % new_url2
   format_string = ''
-  for node_id, human_name in zip(top_k, top_names):
-    score = predictions[node_id]
-    format_string += '%s (score:%.5f)<BR>' % (human_name, score)
-  ret_string = new_tag  + format_string + '<BR>' 
+  format_string += '%s (score:%.5f)<BR>' % (top_names, score)
+  ret_string = new_tag  + new_tag2 + format_string + lookslike +'<BR>'
   return ret_string
 
 
@@ -63,11 +70,11 @@ def inference(file_name):
 def root():
   result = """
     <!doctype html>
-    <title>临时测试用</title>
-    <h1>来喂一张照片吧</h1>
+    <title>My Vehicle Detection Demo</title>
+    <h1>请导入汽车图片</h1>
     <form action="" method=post enctype=multipart/form-data>
       <p><input type=file name=file value='选择图片'>
-         <input type=submit value='上传'>
+         <input type=submit value='上传检测'>
     </form>
     <p>%s</p>
     """ % "<br>"
@@ -81,7 +88,7 @@ def root():
       type_name = 'N/A'
       print('file saved to %s' % file_path)
       out_html = inference(file_path)
-      return result + out_html 
+      return result + out_html
   return result
 
 if __name__ == "__main__":

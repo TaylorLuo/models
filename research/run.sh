@@ -11,10 +11,10 @@ export PYTHONPATH=$PYTHONPATH:$DIR:$DIR/slim:$DIR/object_detection
 # 定义各目录
 
 # locally run path
-output_dir=/media/taylor/新加卷3/002---study/rnn_log/output  # 训练目录
+output_dir=/media/taylor/G/002---study/rnn_log/output  # 训练目录
 dataset_dir=/home/taylor/Documents/homework/vehicle-detect-dataset # 数据集目录，这里是写死的，记得修改
 
-# tinymind path
+# tinymind path4
 #output_dir=/output  # 训练目录
 #dataset_dir=/data/luoweile/my-objectdetection # 数据集目录，这里是写死的，记得修改
 
@@ -24,9 +24,10 @@ eval_dir=$output_dir/eval
 
 # config文件
 #config=ssd_mobilenet_v1_pets.config
-config=faster_rcnn_resnet101.config
+#config=faster_rcnn_resnet101.config
+config=faster_rcnn_inception_v2_coco.config
 #config=pipeline.config
-#config=faster_rcnn_resnet101_kitti.config
+##config=faster_rcnn_resnet101_kitti.config
 pipeline_config_path=$output_dir/$config
 
 # 先清空输出目录，本地运行会有效果，tinymind上运行这一行没有任何效果
@@ -51,8 +52,9 @@ done
 
 # 导出模型
 python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path $pipeline_config_path --trained_checkpoint_prefix $train_dir/model.ckpt-$current  --output_directory=$output_dir/exported_graphs
-#python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/新加卷3/002---study/rnn_log/output/ssd_mobilenet_v1_pets.config --trained_checkpoint_prefix /media/taylor/新加卷3/002---study/rnn_log/output/train/model.ckpt-19000  --output_directory=/media/taylor/新加卷3/002---study/rnn_log/output/exported_graphs
+#python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/ssd_mobilenet_v1_pets.config --trained_checkpoint_prefix /media/taylor/G/002---study/rnn_log/output/train/model.ckpt-19000  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
+#python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/faster_rcnn_resnet101.config --trained_checkpoint_prefix /media/taylor/G/002---study/rnn_log/output/train/model.ckpt-13200  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
 
 # 在test.jpg上验证导出的模型
 python ./inference.py --output_dir=$output_dir --dataset_dir=$dataset_dir
-#python ../inference.py --output_dir=/media/taylor/新加卷3/002---study/rnn_log/output --dataset_dir=/home/taylor/Documents/homework/vehicle-detect-dataset
+#python ../inference.py --output_dir=/media/taylor/G/002---study/rnn_log/output --dataset_dir=/home/taylor/Documents/homework/vehicle-detect-dataset
