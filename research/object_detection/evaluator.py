@@ -59,6 +59,8 @@ def _extract_prediction_tensors(model,
   preprocessed_image = model.preprocess(tf.to_float(original_image))
   prediction_dict = model.predict(preprocessed_image)
   detections = model.postprocess(prediction_dict)
+  print("!!!@@@")
+  print(input_dict[fields.InputDataFields.groundtruth_classes])
 
   groundtruth = None
   if not ignore_groundtruth:
@@ -162,13 +164,19 @@ def evaluate(create_input_dict_fn, create_model_fn, eval_config, categories,
     """
     try:
       result_dict = sess.run(tensor_dict)
+      # print("00000!!!!!!!!!!")
+      # print(result_dict)
       counters['success'] += 1
     except tf.errors.InvalidArgumentError:
       logging.info('Skipping image')
       counters['skipped'] += 1
       return {}
     global_step = tf.train.global_step(sess, tf.train.get_global_step())
+    # print("111@@@@@@@@@@@@@@")
+    # print(batch_index)
+    # print(eval_config.num_visualizations)
     if batch_index < eval_config.num_visualizations:
+    # if 1==1:
       tag = 'image-{}'.format(batch_index)
       eval_util.visualize_detection_results(
           result_dict,

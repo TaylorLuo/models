@@ -84,11 +84,12 @@ def main(unused_argv):
   assert FLAGS.eval_dir, '`eval_dir` is missing.'
   tf.gfile.MakeDirs(FLAGS.eval_dir)
   if FLAGS.pipeline_config_path:
-    configs = config_util.get_configs_from_pipeline_file(
-        FLAGS.pipeline_config_path)
-    tf.gfile.Copy(FLAGS.pipeline_config_path,
-                  os.path.join(FLAGS.eval_dir, 'pipeline.config'),
-                  overwrite=True)
+      configs = config_util.get_configs_from_pipeline_file(
+          FLAGS.pipeline_config_path)
+      print(configs)
+      tf.gfile.Copy(FLAGS.pipeline_config_path,
+                    os.path.join(FLAGS.eval_dir, 'pipeline.config'),
+                    overwrite=True)
   else:
     configs = config_util.get_configs_from_multiple_files(
         model_config_path=FLAGS.model_config_path,

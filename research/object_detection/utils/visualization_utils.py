@@ -392,7 +392,7 @@ def visualize_boxes_and_labels_on_image_array(image,
                                               use_normalized_coordinates=False,
                                               max_boxes_to_draw=1,
                                               min_score_thresh=.5,
-                                              agnostic_mode=False,
+                                              agnostic_mode=True,
                                               line_thickness=4):
   """Overlay labeled boxes on an image with formatted scores and label names.
 
@@ -438,7 +438,10 @@ def visualize_boxes_and_labels_on_image_array(image,
     max_boxes_to_draw = boxes.shape[0]
   for i in range(min(max_boxes_to_draw, boxes.shape[0])):
     if scores is None or scores[i] > min_score_thresh:
-      box = tuple(boxes[i].tolist())
+      if scores[i] == max(scores):
+        box = tuple(boxes[i].tolist())
+        print("4444@@@@@@@@@@@@")
+        print(box)
       if instance_masks is not None:
         box_to_instance_masks_map[box] = instance_masks[i]
       if keypoints is not None:
@@ -462,11 +465,11 @@ def visualize_boxes_and_labels_on_image_array(image,
         else:
           box_to_color_map[box] = STANDARD_COLORS[
               classes[i] % len(STANDARD_COLORS)]
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print('max(scores)= %.2f,class: %s, info: %s' % (max(scores), classes[i], class_name))
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        # print('max(scores)= %.2f,class: %s, info: %s' % (max(scores), classes[i], class_name))
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     else:
         if scores[i] == max(scores):
            box = tuple(boxes[i].tolist())
@@ -490,12 +493,12 @@ def visualize_boxes_and_labels_on_image_array(image,
                else:
                    box_to_color_map[box] = STANDARD_COLORS[
                        classes[i] % len(STANDARD_COLORS)]
-           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
-           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           print('max(scores)= %.2f,but it is like class: %s, info: %s' % (max(scores), classes[i], category_index[classes[i]]['name']))
+           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           # print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
+           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+           # print('max(scores)= %.2f,but it is like class: %s, info: %s' % (max(scores), classes[i], category_index[classes[i]]['name']))
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():

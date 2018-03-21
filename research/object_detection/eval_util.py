@@ -59,7 +59,7 @@ def visualize_detection_results(result_dict,
                                 summary_dir='',
                                 export_dir='',
                                 agnostic_mode=False,
-                                show_groundtruth=False,
+                                show_groundtruth=True,
                                 min_score_thresh=.5,
                                 max_num_predictions=20):
   """Visualizes detection results and writes visualizations to image summaries.
@@ -124,6 +124,11 @@ def visualize_detection_results(result_dict,
   detection_keypoints = result_dict.get('detection_keypoints', None)
   detection_masks = result_dict.get('detection_masks', None)
 
+  print("222@@@@@@@@@@@@")
+  print(len(detection_boxes))
+  # print(category_index)
+  # print(categories)
+
   # Plot groundtruth underneath detections
   if show_groundtruth:
     groundtruth_boxes = result_dict['groundtruth_boxes']
@@ -137,6 +142,8 @@ def visualize_detection_results(result_dict,
         keypoints=groundtruth_keypoints,
         use_normalized_coordinates=False,
         max_boxes_to_draw=None)
+    print("333############")
+    print(result_dict.get('groundtruth_classes'))
   vis_utils.visualize_boxes_and_labels_on_image_array(
       image,
       detection_boxes,
@@ -151,6 +158,8 @@ def visualize_detection_results(result_dict,
       agnostic_mode=agnostic_mode)
 
   if export_dir:
+    # print("111@@@@@@@@@@@@@@@@@@@@@@@")
+    # print(export_dir)
     export_path = os.path.join(export_dir, 'export-{}.png'.format(tag))
     vis_utils.save_image_array_as_png(image, export_path)
 
@@ -454,6 +463,8 @@ def result_dict_for_single_example(image,
   label_id_offset = 1  # Applying label id offset (b/63711816)
 
   input_data_fields = fields.InputDataFields()
+  print("123456")
+  print(input_data_fields.groundtruth_classes)
   output_dict = {
       input_data_fields.original_image: image,
       input_data_fields.key: key,
@@ -499,6 +510,8 @@ def result_dict_for_single_example(image,
       output_dict[detection_fields.detection_keypoints] = (
           absolute_detection_keypoints)
 
+  print("111!!!!!!!!!!")
+  print(groundtruth[input_data_fields.groundtruth_classes])
   if groundtruth:
     output_dict.update(groundtruth)
     if scale_to_absolute:
@@ -513,4 +526,6 @@ def result_dict_for_single_example(image,
       groundtruth_classes = tf.ones_like(groundtruth_classes, dtype=tf.int64)
       output_dict[input_data_fields.groundtruth_classes] = groundtruth_classes
 
+  # print("222!!!!!!!!!!")
+  # print(output_dict)
   return output_dict

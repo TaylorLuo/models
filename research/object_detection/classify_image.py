@@ -44,8 +44,8 @@ import tarfile
 import numpy as np
 from six.moves import urllib
 import tensorflow as tf
-from utils import label_map_util
-from utils import visualization_utils as vis_util
+from object_detection.utils import label_map_util
+from object_detection.utils import visualization_utils as vis_util
 from PIL import Image
 from matplotlib import pyplot as plt
 import time
