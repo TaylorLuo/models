@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 30 23:53:56 2017
 
-@author: zhangxu
+
+@author: lwl
 """
 import tensorflow as tf
 from PIL import Image
@@ -10,11 +10,18 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 from object_detection.utils import visualization_utils as vis_util
+import codecs
 
 #写入图片路径
 swd = '/media/taylor/G/002---study/rnn_log/output/out-images/'
+output_path = '/media/taylor/G/002---study/rnn_log/output/'
+train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/'
+validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/'
 #TFRecord文件路径
 data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00000-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00001-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00002-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00003-of-00004.tfrecord'
 # 获取文件名列表
 data_files = tf.gfile.Glob(data_path)
 print(data_files)
@@ -31,7 +38,7 @@ features = tf.parse_single_example(serialized_example,
                                        'image/height': tf.FixedLenFeature([], tf.int64),
                                    })  #取出包含image和label的feature对象
 #tf.decode_raw可以将字符串解析成图像对应的像素数组
-image = tf.image.decode_jpeg(features['image/encoded'])
+image = tf.image.decode_png(features['image/encoded'])
 height = tf.cast(features['image/height'],tf.int32)
 width = tf.cast(features['image/width'],tf.int32)
 label = tf.cast(features['image/class/label'], tf.int32)
@@ -42,25 +49,28 @@ channel = 3
 with tf.Session() as sess: #开始一个会话
     init_op = tf.initialize_all_variables()
     sess.run(init_op)
+    f = codecs.open(output_path + 'devkit/cars_train_annos_p1.txt', "wb", encoding='utf-8')
     #启动多线程
     coord=tf.train.Coordinator()
     threads= tf.train.start_queue_runners(coord=coord)
 
     # PATH_TO_CKPT = os.path.join("/media/taylor/G/002---study/rnn_log/output", 'exported_graphs_inception04/frozen_inference_graph.pb')
     PATH_TO_CKPT = os.path.join("/home/taylor/Documents/homework/week08", 'ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb')
-
-    for i in range(1500):
+    for i in range(12000):
         #image_down = np.asarray(image_down.eval(), dtype='uint8')
         # plt.imshow(image.eval())
         # plt.show()
         images,heights, widths, labels = sess.run([image,height,width,label])#在会话中取出image和label
+        print("\t\n")
         print("2222@@@@@@@@@@@@")
-        print("第====%d====张图片", i)
+        print("第====%d====张图片"%(i+1))
         # img=Image.fromarray(single, 'RGB')#这里Image是之前提到的
         # img.save(swd+str(i)+'_''Label_'+str(l)+'.jpg')#存下图片
         print("图片高-宽-标签")
         print(heights,widths, labels)
-        # plt.imsave((swd+str(i)+'_''Label_'+str(labels)+'.jpg'), images)
+        pic_name = str(i)+'_''Label_'+str(labels)+'.png'
+        plt.imsave((train_pics+pic_name), images)
+        # plt.imsave((validation_pics+str(i)+'_''Label_'+str(labels)+'.jpg'), images)
 
         detection_graph = tf.Graph()
         with detection_graph.as_default():
@@ -87,24 +97,29 @@ with tf.Session() as sess: #开始一个会话
                 scores = np.squeeze(scores)
                 # print('11############################')
                 # print(boxes)
-                for i in range(min(1, boxes.shape[0])):
-                    if scores is None or scores[i] > 0.1:
-                        if scores[i] == max(scores):
+                for j in range(min(1, boxes.shape[0])):
+                    if scores is None or scores[j] > 0.1:
+                        if scores[j] == max(scores):
                             print("3333@@@@@@@@@@@@")
                             print(max(scores))
-                            box = tuple(boxes[i].tolist())
+                            box = tuple(boxes[j].tolist())
                             # print("4444@@@@@@@@@@@@")
                             # print(box)
 
-                vis_util.visualize_boxes_and_labels_on_image_array(
-                    images,
-                    boxes,
-                    [],
-                    scores,
-                    {},
-                    use_normalized_coordinates=True,
-                    line_thickness=8)
-                plt.imsave((swd + str(i) + '_''Label_' + str(labels) + '.png'), images)
+                            recordstr = str(box[0]) + '\t' + str(box[1]) + '\t' + str(box[2]) + '\t' + str(
+                                box[3]) + '\t' + str(labels) + '\t' + pic_name
+                            f.writelines((recordstr + '\n'))
 
+
+                # vis_util.visualize_boxes_and_labels_on_image_array(
+                #     images,
+                #     boxes,
+                #     [],
+                #     scores,
+                #     {},
+                #     use_normalized_coordinates=True,
+                #     line_thickness=8)
+                # plt.imsave((swd + str(i) + '_''Label_' + str(labels) + '.png'), images)
+    f.close()
     coord.request_stop()
     coord.join(threads)
