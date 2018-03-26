@@ -86,7 +86,6 @@ def main(unused_argv):
   if FLAGS.pipeline_config_path:
       configs = config_util.get_configs_from_pipeline_file(
           FLAGS.pipeline_config_path)
-      print(configs)
       tf.gfile.Copy(FLAGS.pipeline_config_path,
                     os.path.join(FLAGS.eval_dir, 'pipeline.config'),
                     overwrite=True)
@@ -119,6 +118,7 @@ def main(unused_argv):
       input_config)
 
   label_map = label_map_util.load_labelmap(input_config.label_map_path)
+  # print(label_map)
   max_num_classes = max([item.id for item in label_map.item])
   categories = label_map_util.convert_label_map_to_categories(
       label_map, max_num_classes)

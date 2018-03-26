@@ -14,4 +14,15 @@ def get_label_map_dict(path):
         label_map_dict[idx] = valuestr
     return label_map_dict
 
-print(get_label_map_dict('./labels.txt')[2])
+# print(get_label_map_dict('./labels.txt'))
+
+
+categories = []
+list_of_ids_already_added = []
+label_map_dict = get_label_map_dict('./labels.txt')
+for (d, x) in label_map_dict.items():
+    if d not in list_of_ids_already_added:
+      list_of_ids_already_added.append(d)
+      categories.append({'id': d, 'name': x})
+
+print(categories)

@@ -15,13 +15,24 @@ import codecs
 #写入图片路径
 swd = '/media/taylor/G/002---study/rnn_log/output/out-images/'
 output_path = '/media/taylor/G/002---study/rnn_log/output/'
-train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/'
-validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/'
+# train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_01/'
+# train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_02/'
+# train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_03/'
+# train_pics = '/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_04/'
+# validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_01/'
+# validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_02/'
+# validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_03/'
+# validation_pics = '/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_04/'
 #TFRecord文件路径
-data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00000-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00000-of-00004.tfrecord'
 # data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00001-of-00004.tfrecord'
 # data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00002-of-00004.tfrecord'
 # data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00003-of-00004.tfrecord'
+#
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_validation_00000-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_validation_00001-of-00004.tfrecord'
+# data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_validation_00002-of-00004.tfrecord'
+data_path = '/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_validation_00003-of-00004.tfrecord'
 # 获取文件名列表
 data_files = tf.gfile.Glob(data_path)
 print(data_files)
@@ -49,14 +60,23 @@ channel = 3
 with tf.Session() as sess: #开始一个会话
     init_op = tf.initialize_all_variables()
     sess.run(init_op)
-    f = codecs.open(output_path + 'devkit/cars_train_annos_p1.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_train_annos_p1_01.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_train_annos_p1_02.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_train_annos_p1_03.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_train_annos_p1_04.txt', "wb", encoding='utf-8')
+
+    # f = codecs.open(output_path + 'devkit/cars_validation_annos_p1_01.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_validation_annos_p1_02.txt', "wb", encoding='utf-8')
+    # f = codecs.open(output_path + 'devkit/cars_validation_annos_p1_03.txt', "wb", encoding='utf-8')
+    f = codecs.open(output_path + 'devkit/cars_validation_annos_p1_04.txt', "wb", encoding='utf-8')
     #启动多线程
     coord=tf.train.Coordinator()
     threads= tf.train.start_queue_runners(coord=coord)
 
     # PATH_TO_CKPT = os.path.join("/media/taylor/G/002---study/rnn_log/output", 'exported_graphs_inception04/frozen_inference_graph.pb')
     PATH_TO_CKPT = os.path.join("/home/taylor/Documents/homework/week08", 'ssd_mobilenet_v1_coco_2017_11_17/frozen_inference_graph.pb')
-    for i in range(12000):
+    # for i in range(10995):
+    for i in range(1225):
         #image_down = np.asarray(image_down.eval(), dtype='uint8')
         # plt.imshow(image.eval())
         # plt.show()
@@ -69,8 +89,8 @@ with tf.Session() as sess: #开始一个会话
         print("图片高-宽-标签")
         print(heights,widths, labels)
         pic_name = str(i)+'_''Label_'+str(labels)+'.png'
-        plt.imsave((train_pics+pic_name), images)
-        # plt.imsave((validation_pics+str(i)+'_''Label_'+str(labels)+'.jpg'), images)
+        #　保存原图
+        # plt.imsave((validation_pics+pic_name), images)
 
         detection_graph = tf.Graph()
         with detection_graph.as_default():
@@ -110,7 +130,7 @@ with tf.Session() as sess: #开始一个会话
                                 box[3]) + '\t' + str(labels) + '\t' + pic_name
                             f.writelines((recordstr + '\n'))
 
-
+                #　生成带边框图片
                 # vis_util.visualize_boxes_and_labels_on_image_array(
                 #     images,
                 #     boxes,

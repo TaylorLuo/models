@@ -157,8 +157,13 @@ def dict_to_tf_example(data,
 
   classid = data[1]
   # new_dict = {v: k for k, v in label_map_dict.items()}
+  # print(label_map_dict)
   print("!!!!!!!!!!!!@@@@@@@@@@##########")
-  class_name = label_map_dict[classid]
+  new_dict = {v: k for k, v in label_map_dict.items()}
+  # print(new_dict)
+  classid = int(classid)+1
+  # print(classid)
+  class_name = new_dict[classid]
   classes_text.append(class_name.encode('utf8'))
   classes.append(classid)
   print(class_name)
@@ -174,7 +179,7 @@ def dict_to_tf_example(data,
       'image/source_id': dataset_util.bytes_feature(data[0].encode('utf8')),
       'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
       'image/encoded': dataset_util.bytes_feature(encoded_jpg),
-      'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
+      'image/format': dataset_util.bytes_feature('png'.encode('utf8')),
       'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
       'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
       'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
@@ -231,27 +236,42 @@ def create_tf_record(output_filename,
 # TODO(derekjchow): Add test for pet/PASCAL main files.
 def main(_):
   data_dir = FLAGS.data_dir #/home/taylor/Documents/homework/vehicle-detect-dataset
-  # label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
+  label_map_dict = label_map_util.get_label_map_dict(FLAGS.label_map_path)
   # print("FLAGS.label_map_path---@@@@@@@@@@@@@@@@@@")
   # print(FLAGS.label_map_path)
   # for (d, x) in label_map_dict.items():
   #   print("key:" + d + ",value:" + str(x))
 
   logging.info('Reading from Pet dataset.')
-  image_dir_train = os.path.join(data_dir, 'train_pics')
-  image_dir_test = os.path.join(data_dir, 'validation_pics')
+  # image_dir_train = os.path.join(data_dir, 'train_pics/train_pics_01')
+  # image_dir_train = os.path.join(data_dir, 'train_pics/train_pics_02')
+  # image_dir_train = os.path.join(data_dir, 'train_pics/train_pics_03')
+  # image_dir_train = os.path.join(data_dir, 'train_pics/train_pics_04')
+
+  image_dir_test = os.path.join(data_dir, 'validation_pics/validation_pics_01')
+  # image_dir_test = os.path.join(data_dir, 'validation_pics/validation_pics_02')
+  # image_dir_test = os.path.join(data_dir, 'validation_pics/validation_pics_03')
+  # image_dir_test = os.path.join(data_dir, 'validation_pics/validation_pics_04')
   annotations_dir = os.path.join(data_dir, 'devkit')
-  examples_path_train = os.path.join(annotations_dir, 'cars_train_annos_p1.txt')
-  examples_path_test = os.path.join(annotations_dir, 'cars_test_annos_p1.txt')
+  # examples_path_train = os.path.join(annotations_dir, 'cars_train_annos_p1_01.txt')
+  # examples_path_train = os.path.join(annotations_dir, 'cars_train_annos_p1_02.txt')
+  # examples_path_train = os.path.join(annotations_dir, 'cars_train_annos_p1_03.txt')
+  # examples_path_train = os.path.join(annotations_dir, 'cars_train_annos_p1_04.txt')
+
+  examples_path_test = os.path.join(annotations_dir, 'cars_validation_annos_p1_01.txt')
+  # examples_path_test = os.path.join(annotations_dir, 'cars_validation_annos_p1_02.txt')
+  # examples_path_test = os.path.join(annotations_dir, 'cars_validation_annos_p1_03.txt')
+  # examples_path_test = os.path.join(annotations_dir, 'cars_validation_annos_p1_04.txt')
   labels_path = os.path.join(annotations_dir, 'labels.txt')
   # examples_path = os.path.join(annotations_dir, 'trainval.txt')
   # examples_list = dataset_util.read_examples_list(examples_path)
   # examples_list = [int(i) for i in examples_list]
   # print(examples_list)
   # print(len(examples_list))
-  label_map_dict = get_label_map_dict(labels_path)
+  # label_map_dict = get_label_map_dict(labels_path)
 
-  data_train = read_imagefile_label(examples_path_train)
+  # data_train = read_imagefile_label(examples_path_train)
+  data_train = read_imagefile_label(examples_path_test)
 
 
   # Test images are not included in the downloaded data set, so we shall perform
@@ -266,14 +286,22 @@ def main(_):
   #              len(train_examples), len(val_examples))
   # print(train_examples)
 
-  train_output_path = os.path.join(FLAGS.output_dir, 'train_cars_001.record')
-  val_output_path = os.path.join(FLAGS.output_dir, 'val_cars.record')
+  # train_output_path = os.path.join(FLAGS.output_dir, 'train_cars_01.record')
+  # train_output_path = os.path.join(FLAGS.output_dir, 'train_cars_02.record')
+  # train_output_path = os.path.join(FLAGS.output_dir, 'train_cars_03.record')
+  # train_output_path = os.path.join(FLAGS.output_dir, 'train_cars_04.record')
+
+  val_output_path = os.path.join(FLAGS.output_dir, 'val_cars_01.record')
+  # val_output_path = os.path.join(FLAGS.output_dir, 'val_cars_02.record')
+  # val_output_path = os.path.join(FLAGS.output_dir, 'val_cars_03.record')
+  # val_output_path = os.path.join(FLAGS.output_dir, 'val_cars_04.record')
 
 
-  create_tf_record(train_output_path, label_map_dict,
-                   image_dir_train, data_train)
-  # create_tf_record(val_output_path, label_map_dict,
-  #                  image_dir_test, data_train)
+  # create_tf_record(train_output_path, label_map_dict,
+  #                  image_dir_train, data_train)
+
+  create_tf_record(val_output_path, label_map_dict,
+                   image_dir_test, data_train)
 
 
 if __name__ == '__main__':

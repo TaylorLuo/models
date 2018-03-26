@@ -69,7 +69,7 @@ examples_list = read_examples_list('./labels.txt')
 f = codecs.open('./labels_items4.txt', "wb", encoding = 'utf-8')
 # f2 = codecs.open('./labels_items4.txt',"wb",encoding = 'utf-8')
 for idx, item in enumerate(examples_list):
-    feature_dict = 'item {\n  id: ' + str(idx + 1) + '\n  '+ 'name: ' +"'" +str(item.split(':')[1]) + "'" + '\n}\n'
+    feature_dict = 'item {\n  id: ' + str(idx + 1) + '\n  '+ 'name: ' +"'" +str(idx) + "'" + '\n}\n'
     f.writelines((feature_dict + '\n'))
     # dump(feature_dict + '\n')
     # f2.write(feature_dict + '\n')
