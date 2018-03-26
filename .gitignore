@@ -2,3 +2,4 @@
 .idea/
 rebar
 *.iml
+venv
