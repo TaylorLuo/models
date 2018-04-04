@@ -17,7 +17,7 @@ FLAGS = tf.app.flags.FLAGS
 tf.app.flags.DEFINE_string('model_dir', '/media/taylor/G/002---study/rnn_log/output', """Path to graph_def pb, """)
 tf.app.flags.DEFINE_string('dataset_dir', '/home/taylor/Documents/homework/vehicle-detect-dataset', """Path to graph_def pb, """)
 tf.app.flags.DEFINE_string('model_name', 'frozen_inference_graph.pb', '')
-tf.app.flags.DEFINE_string('label_file', 'labels_items.txt', '')
+tf.app.flags.DEFINE_string('label_file', 'labels_items4.txt', '')
 tf.app.flags.DEFINE_string('upload_folder', '/home/taylor/Documents/homework/vehicle-detect-dataset', '')
 tf.app.flags.DEFINE_integer('num_top_predictions', 5,
                             """Display this many predictions.""")

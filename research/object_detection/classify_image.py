@@ -50,7 +50,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 import time
 
-NUM_CLASSES = 196
+NUM_CLASSES = 764
 
 # def parse_args(check=True):
 #     parser = argparse.ArgumentParser()

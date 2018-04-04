@@ -1,0 +1,21 @@
+import os
+import os.path
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_041"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_011_021_val"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_031_041"
+rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_011_021"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_011_021"
+
+# file_object = open('./train_list.txt','w')
+file_object = open('./validation_pics_all_withpath.txt','w')
+
+for parent,dirnames,filenames in os.walk(rootdir):
+    for filename in filenames:
+        if filename[-3:] == 'jpg':
+            print  (filename)
+            # file_object.write('/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000/'+filename+ '\n')
+            file_object.write('/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_011_021/'+filename+ '\n')
+            # file_object.write('/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_011_021/'+filename+ '\n')
+file_object.close()

@@ -438,67 +438,72 @@ def visualize_boxes_and_labels_on_image_array(image,
     max_boxes_to_draw = boxes.shape[0]
   for i in range(min(max_boxes_to_draw, boxes.shape[0])):
     if scores is None or scores[i] > min_score_thresh:
-      if scores[i] == max(scores):
         box = tuple(boxes[i].tolist())
-        print("4444@@@@@@@@@@@@")
-        print(box)
-      if instance_masks is not None:
-        box_to_instance_masks_map[box] = instance_masks[i]
-      if keypoints is not None:
-        box_to_keypoints_map[box].extend(keypoints[i])
-      if scores is None:
-        box_to_color_map[box] = 'black'
-      else:
-        if not agnostic_mode:
-          if classes[i] in category_index.keys():
-            class_name = category_index[classes[i]]['name']
-          else:
-            class_name = 'N/A'
-          display_str = '{}: {}%'.format(
-              class_name,
-              int(100*scores[i]))
+        if scores is not None and scores[i] == max(scores):
+            maxscores = max(scores)
+            print("4444@@@@@@@@@@@@")
+            print(box)
         else:
-          display_str = 'score: {}%'.format(int(100 * scores[i]))
-        box_to_display_str_map[box].append(display_str)
-        if agnostic_mode:
-          box_to_color_map[box] = 'DarkOrange'
+            maxscores = 0
+        if instance_masks is not None:
+            box_to_instance_masks_map[box] = instance_masks[i]
+        if keypoints is not None:
+            box_to_keypoints_map[box].extend(keypoints[i])
+        if scores is None:
+            box_to_color_map[box] = 'black'
         else:
-          box_to_color_map[box] = STANDARD_COLORS[
-              classes[i] % len(STANDARD_COLORS)]
-        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        # print('max(scores)= %.2f,class: %s, info: %s' % (max(scores), classes[i], class_name))
-        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            if not agnostic_mode:
+                if classes[i] in category_index.keys():
+                    class_name = category_index[classes[i]]['name']
+                else:
+                    class_name = 'N/A'
+                display_str = '{}: {}%'.format(
+                    class_name,
+                    int(100*scores[i]))
+            else:
+                class_name = category_index[classes[i]]['name']
+                display_str = 'score: {}%'.format(int(100 * scores[i]))
+            box_to_display_str_map[box].append(display_str)
+            if agnostic_mode:
+                box_to_color_map[box] = 'DarkOrange'
+            else:
+                box_to_color_map[box] = STANDARD_COLORS[
+                    classes[i] % len(STANDARD_COLORS)]
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('max(scores)= %.4f,class: %s, info: %s' % (maxscores, classes[i], class_name))
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     else:
-        if scores[i] == max(scores):
-           box = tuple(boxes[i].tolist())
-           if instance_masks is not None:
-               box_to_instance_masks_map[box] = instance_masks[i]
-           if keypoints is not None:
-               box_to_keypoints_map[box].extend(keypoints[i])
-           if scores is None:
-               box_to_color_map[box] = 'black'
-           else:
-               if not agnostic_mode:
-                   class_name = 'NoCar'
-                   display_str = '{}: {}%'.format(
-                       class_name,
-                       int(100 * scores[i]))
-               else:
-                   display_str = 'score: {}%'.format(int(100 * scores[i]))
-               box_to_display_str_map[box].append(display_str)
-               if agnostic_mode:
-                   box_to_color_map[box] = 'DarkOrange'
-               else:
-                   box_to_color_map[box] = STANDARD_COLORS[
-                       classes[i] % len(STANDARD_COLORS)]
-           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           # print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
-           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           # print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-           # print('max(scores)= %.2f,but it is like class: %s, info: %s' % (max(scores), classes[i], category_index[classes[i]]['name']))
+        box = tuple(boxes[i].tolist())
+        if scores is not None and scores[i] == max(scores):
+            maxscores = max(scores)
+            if instance_masks is not None:
+                box_to_instance_masks_map[box] = instance_masks[i]
+            if keypoints is not None:
+                box_to_keypoints_map[box].extend(keypoints[i])
+            if scores is None:
+                box_to_color_map[box] = 'black'
+            else:
+                if not agnostic_mode:
+                    class_name = 'NoCar'
+                    display_str = '{}: {}%'.format(
+                        class_name,
+                        int(100 * scores[i]))
+                else:
+                    display_str = 'score: {}%'.format(int(100 * scores[i]))
+                box_to_display_str_map[box].append(display_str)
+                if agnostic_mode:
+                    box_to_color_map[box] = 'DarkOrange'
+                else:
+                    box_to_color_map[box] = STANDARD_COLORS[
+                        classes[i] % len(STANDARD_COLORS)]
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+            print('max(scores)= %.4f,but it is like class: %s, info: %s' % (maxscores, classes[i], category_index[classes[i]]['name']))
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():

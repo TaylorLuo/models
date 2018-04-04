@@ -59,8 +59,6 @@ def _extract_prediction_tensors(model,
   preprocessed_image = model.preprocess(tf.to_float(original_image))
   prediction_dict = model.predict(preprocessed_image)
   detections = model.postprocess(prediction_dict)
-  print("!!!@@@")
-  print(input_dict[fields.InputDataFields.groundtruth_classes])
 
   groundtruth = None
   if not ignore_groundtruth:

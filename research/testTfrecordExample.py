@@ -9,7 +9,9 @@ import PIL.Image
 import os.path
 from matplotlib import pyplot as plt
 
-file = "/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00000-of-00004.tfrecord"
+# file = "/home/taylor/Documents/homework/vehicle-detect-dataset/out/pet_train.record"
+file = "/media/taylor/G/002---study/rnn_log/output/out/tmp/train_cars_041.record"
+# file = "/media/taylor/H/CSDN/project_datasets/project3_vehicle_detection/pj_vehicle_train_00000-of-00004.tfrecord"
 output_path = "/media/taylor/G/002---study/rnn_log/output/out-images"
 record_iterator = tf.python_io.tf_record_iterator(path=file)
 data_parser = tf_example_parser.TfExampleDetectionAndGTParser()

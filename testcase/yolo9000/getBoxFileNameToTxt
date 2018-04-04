@@ -1,0 +1,22 @@
+import os
+import os.path
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000_p1_04"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_box_yolo9000"
+# rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_yolo9000_p1_01_02"
+rootdir = "/media/taylor/G/002---study/rnn_log/output/validation_pics/validation_pics_yolo9000_p1_03_04"
+
+# file_object = open('./train_list.txt','w')
+file_object = open('./validation_pics_yolo9000_p1_03_04.txt','w')
+
+for parent,dirnames,filenames in os.walk(rootdir):
+    for filename in filenames:
+        if filename[-3:] == 'txt':
+            print  (filename)
+            # file_object.write('/media/taylor/G/002---study/rnn_log/output/train_pics/train_pics_yolo9000'+filename+ '\n')
+            file_object.write(''+filename+ '\n')
+file_object.close()
+
+
+#test_txt_list_p1_01~04.txt test_list_train_pics_011~041.txt
+#分别是boundingbox,pic的文件名，是为了验证是否一致
