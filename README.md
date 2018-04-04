@@ -1,34 +1,32 @@
-本地运行方法：
+汽车检测项目
+实现一：
 
-前提环境：python3.5 Tensorflow1.4
-
-1.登录自己的github fork models项目，然后用pycharmcheckout到本地
-2.下载数据集quiz-w8-doc，并将inference.py、run.py、run.sh、ssd_mobilenet_v1_pets.config添加到models/research目录下
-3.参照https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/installation.md安装Object Detection API所需要的libs
-并在research目录下执行脚本：protoc object_detection/protos/*.proto --python_out=. 编译Protobuf，用脚本：python object_detection/builders/model_builder_test.py
-验证是否编译成功
-4.修改create_pet_tf_record.py，并在research目录下执行环境变量配置脚本：export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
-5.到https://gitee.com/ai100/quiz-w8-data.git下载实验数据
-6.执行生成tfrecord脚本：
-week08:
-python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt --data_dir=/home/taylor/Documents/homework/week08/quiz-w8-data --output_dir=/home/taylor/Documents/homework/week08/quiz-w8-data/out
-wehicle-detect:
-python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/labels_items.txt --data_dir=/home/taylor/Documents/homework/vehicle-detect-dataset --output_dir=/home/taylor/Documents/homework/vehicle-detect-dataset/out
-python object_detection/dataset_tools/create_pet_tf_record.py --label_map_path=/home/taylor/Documents/homework/week08/quiz-w8-data/labels_items.txt --data_dir=/home/taylor/Documents/homework/week08/quiz-w8-data --output_dir=/home/taylor/Documents/homework/week08/quiz-w8-data/out
-
-python object_detection/dataset_tools/create_pet_tf_record_p1.py --label_map_path=/home/taylor/Documents/homework/vehicle-detect-dataset/devkit/labels_items3.txt --data_dir=/media/taylor/G/002---study/rnn_log/output --output_dir=/media/taylor/G/002---study/rnn_log/output/out
+1.本模型基于第八周作业，数据使用CompCars，来源https://blog.csdn.net/Mr_Curry/article/details/53160914?locationNum=4&fps=1，
+数据集为196种车型的整体,局部外观图片，其中包括8144条训练数据和8041条测试数据，但是标注文件是matlab格式，所以需要先转换成txt文件，所以需要安装matlab
+(安装方法参考https://blog.csdn.net/minione_2016/article/details/53313271),安装完成后　cd /media/taylor/E/matlab/bin  执行　./matlab
 
 
-7.修改ssd_mobilenet_v1_pets.config、run.sh中目录及其他配置
-8.执行 python run.py
+原始数据图片目录：/home/taylor/Documents/homework/vehicle-detect-dataset
+标注文件目录：/home/taylor/Documents/homework/vehicle-detect-dataset/devkit
 
+2.有了标注信息和原始图片之后，通过create_pet_tf_record.py生成tfrecord文件
+因为测试数据没有类别信息，所以从训练数据中取出80%作为验证集，生成训练数据目录：/home/taylor/Documents/homework/vehicle-detect-dataset/out
 
-tinymind运行方法：
+3.检测框架使用faster-rcnn，基础网络模型使用inception_v2，相应的预训练模型为faster_rcnn_inception_v2_coco
 
-1.新建数据集my-objectdetection，并将model.ckpt.data-00000-of-00001、model.ckpt.index、model.ckpt.meta、labels_items.txt、pet_val.record 、pet_train.record
-test.jpg、ssd_mobilenet_v1_pets.config上传
-2.修改run.sh、ssd_mobilenet_v1_pets.config中的目录配置:output_dir dataset_dir和label_map_path input_path fine_tune_checkpoint
-3.新建模型
-4.运行
+4.使用1080ti，训练大约30小时
 
-tinymind模型地址：https://www.tinymind.com/luoweile/myobjectdetection
+5.为验证展示制作页面：server.py,classify_image.py
+
+6.修改visualization_utils.py,当没有车辆时给予适当的提示
+
+7.使用方法：
+cd research/
+export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
+python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/faster_rcnn_inception_v2_coco.config --trained_checkpoint_prefix /media/taylor/G/002---study/rnn_log/output/train/model.ckpt-19000  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
+cd object_detection/
+sh ../server.sh
+
+在浏览器中输入地址:http://0.0.0.0:5001/
+
+预测图片保存目录：/home/taylor/Documents/homework
