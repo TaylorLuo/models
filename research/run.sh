@@ -24,7 +24,7 @@ eval_dir=$output_dir/eval
 
 # config文件
 #config=ssd_mobilenet_v1_pets.config
-config=faster_rcnn_resnet101.config
+config=faster_rcnn_inception_v2_coco.config
 #config=pipeline.config
 #config=faster_rcnn_resnet101_kitti.config
 pipeline_config_path=$output_dir/$config
