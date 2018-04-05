@@ -71,6 +71,7 @@ def root():
   result = """
     <!doctype html>
     <title>My Vehicle Detection Demo</title>
+    <h1 style='color:red;bold'>Inception_V2+Faster-RCNN+CompCars</h1>
     <h1>请导入汽车图片</h1>
     <form action="" method=post enctype=multipart/form-data>
       <p><input type=file name=file value='选择图片'>
