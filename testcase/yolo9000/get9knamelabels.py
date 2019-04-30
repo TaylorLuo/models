@@ -33,8 +33,8 @@ examples_list = read_examples_list('./labels.txt')
 f = codecs.open('./9ktree4.txt', "wb", encoding = 'utf-8')
 for idx, item in enumerate(examples_list):
     strss = item.split(':')[1]
-    f.writelines((strss + ' 3802' +'\n'))
-    # f.write(('"'+strss + '",'))
+    # f.writelines((strss + ' 3802' +'\n'))
+    f.write(('"'+strss + '",'))
 f.close()
 
 #### get9klabels ####

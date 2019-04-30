@@ -207,8 +207,8 @@ def run_inference_on_image(image, model_file=None):
                     else:
                         display_str = 'score: {}%'.format(int(100 * scores[i]))
 
-            lookslike = ('But it is like class: %s, info: %s' % (
-             classes[i], category_index[classes[i]]['name']))
+                # lookslike = ('But it is like class: %s, info: %s' % (classes[i], category_index[classes[i]]['name']))
+                lookslike = ''
 
     return max(scores), class_name, image_outpath, lookslike
 

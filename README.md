@@ -30,6 +30,7 @@ export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
 
 #python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/faster_rcnn_inception_v2_coco.config --trained_checkpoint_prefix /media/taylor/G/002---study/ckptbak/inception_v2/model.ckpt-4100  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
 python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/faster_rcnn_inception_v2_coco.config --trained_checkpoint_prefix /media/taylor/G/002---study/ckptbak/inception_v2/model.ckpt-14800  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
+python ./object_detection/export_inference_graph.py --input_type image_tensor --pipeline_config_path /media/taylor/G/002---study/rnn_log/output/faster_rcnn_inception_v2_coco.config --trained_checkpoint_prefix /media/taylor/G/002---study/ckptbak/inception_v2/model.ckpt-19000  --output_directory=/media/taylor/G/002---study/rnn_log/output/exported_graphs
 
 cd object_detection/
 

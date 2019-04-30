@@ -503,7 +503,7 @@ def visualize_boxes_and_labels_on_image_array(image,
             print("####(*-__-*) Oh there is no car!!!(*-__-*)####")
             print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-            print('max(scores)= %.4f,but it is like class: %s, info: %s' % (maxscores, classes[i], category_index[classes[i]]['name']))
+            # print('max(scores)= %.4f,but it is like class: %s, info: %s' % (maxscores, classes[i], category_index[classes[i]]['name']))
 
   # Draw all boxes onto image.
   for box, color in box_to_color_map.items():
